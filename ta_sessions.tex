@@ -1,0 +1,59 @@
+\documentclass[a4paper,12pt,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage[margin = 1in,includeheadfoot]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+
+\parindent=0pt
+\parskip=10pt
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Alexander Petrov}
+\lhead{}
+\rfoot{\thepage}
+
+%hyperlinks package -- should be the last to import
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue }
+
+\begin{document}
+
+
+\section*{April 18th}
+
+Why do we not look at $\lambda$ as another Lagrange multiplier?
+
+recall that weird thing where we often optimise with respect to both $x$ and $y$ while they're deterministically related
+
+confused about the mix of asymptotics and computational concerns (like we need $p$ not to grow fast enough relative to $N$ in order for the optimisation to work ??)
+
+
+subsetting to estimate the gradient -- to analyse properties need to delve into stochastic optimisation?
+
+what's the name of that theorem about the rate of growth being the largest in the direction specified by the gradient
+
+Does the problem being convex exclude the existence of any extrema except the global min?
+
+
+Does smoothness correspond to some property of the dgp (joint distribution of $X$ and $u$)? Discreteness of covariates will probably mess this ?
+Is the objective function smooth in general (does the norm affect things badly)?
+
+
+
+
+
+
+
+\end{document}

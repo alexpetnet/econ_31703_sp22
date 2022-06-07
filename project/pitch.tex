@@ -1,0 +1,79 @@
+%%
+% Please see https://bitbucket.org/rivanvx/beamer/wiki/Home for obtaining beamer.
+%%
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\graphicspath{ {images/} }
+\usepackage{threeparttable}
+\usepackage{tikz}
+
+
+\usetheme{AnnArbor}
+
+
+\title[pitch]{Model selection for estimating CEF derivatives}
+\author{sasha petrov}
+\date{May 3, 2022}
+
+\begin{document}
+
+\maketitle
+
+
+
+\begin{frame}{Fixing objects}
+
+From the \textit{all causes} framework, the object of interest:
+
+	\begin{equation}
+	\left\{ \frac{\partial}{\partial x} \phi(X, u) \right\}_{u \in supp \, U}
+\end{equation}
+
+The average that's considered to be a more feasible target:
+
+\begin{equation}
+	\frac{\partial}{\partial x} \mathbb{E} \left[ \phi(X, U) | X = x \right]
+\end{equation}
+
+Weight derivatives at different values of the domain with the density of those values:
+
+\begin{equation}
+	\mathbb{E} \left[ \frac{\partial}{\partial x} \mathbb{E} \left[ \phi(X, U) | X = x \right] \right]
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}{Can we do model selection in this context -- 1}
+	Even if you have a decent predictor for levels $\hat f(x)$, it might not work as well for predicting $f(x') - f(x)$. Think of the average treatment effect as a result of moving from $x$ to $x'$.
+	
+	\begin{itemize}
+		\item Recall Yitzhaki weights -- $\beta_{BLP}$ estimates a `weird' average of derivatives with weights
+		\item Banerjee (2007): Directly target the average derivative -- local OLS is offered as a solution
+	\end{itemize}
+	
+To me this looks like a b/v issue but with an interesting twist -- both supervised and unsupervised ?? How much can we gain in terms of variance by imposing the bias of the sort that $\beta_{BLP}$ does?
+
+What could do for the proj with reasonable prob: Take a context, simulate (wiemann style) and see if BLP can do better for some dgps?
+\end{frame}
+
+\begin{frame}{Can we do model selection in this context -- 2}
+	\begin{itemize}
+		\item What is the bias like for $\beta_{BLP}$ in this setting? Can we obtain the parameter that $\beta_{BLP}$ estimates as a result of some penalisation? So it would be a penalisation that leads to the bandwidth being the complete domain, right?
+		\item When we do lasso: we chose a particular `space' with respect to which to penalise the model, right? What can we choose as a `space' in this case of estimating derivatives?
+		\item It seems weird to impose a minimum distance between the set of weights and the pdf of $X$, right? Maybe penalise directly the distance between the set of Yitzhaki weights and the true pdf of $X$?
+	\end{itemize}
+	
+	Set of weights $\omega: supp \, X \rightarrow \mathbf{R}_+$.
+
+\begin{align}
+	\min d(\omega, f_X) \\
+	\textrm{s.t.} \, d(\omega, \omega_z) \leq \lambda
+\end{align}
+\end{frame}
+
+\end{document}

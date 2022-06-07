@@ -1,0 +1,264 @@
+\documentclass[a4paper,12pt,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage[margin = 1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+
+\parindent=0pt
+\parskip=10pt
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{sasha petrov }
+\lhead{}
+\rfoot{\thepage}
+
+%hyperlinks package -- should be the last to import
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue }
+
+\begin{document}
+
+\subsection*{trying to draw on the model selection approach/analysis}
+
+Drawing on the logic of subset selection/lasso to do the model selection -- can we choose the target parameter that is gonna be best estimated with the given data ? -- maybe the logic will be that with the increasing sample size the estimate for that parameter will converge fastest ?? -- or maybe the complexity of parameters increases with sample size, and pick the ones that are the best given the sample size ?? (that is, the cardinality of the set of parameters increases with sample size and we pick the ones that are optimal for the current sample size) ??
+
+Can we develop a method to `learn' the optimal function of the parameter vector that we can estimate well enough given the sample?
+
+What does it mean for the ATE to approximate the actual joint distribution of potential outcomes? Like what is the metric?
+How 'many' dbns are there that could map to this ATE? Take a Dirichlet process and ask what's the probability of the dbn (in the support) to have this mean ?
+Which CEF (CEF with respect to what) has the highest entropy?
+Entropy / ability-to-learn trade-off ?
+
+
+\noindent\rule{\textwidth}{0.5pt}
+
+
+The challenge with fitting derivatives is that we don't observe them (in contrast to outcome levels).
+
+Important to understand:
+
+Even if you have a decent predictor levels $\hat f(x)$, it might not work as well for predicting $f(x') - f(x)$. Think of the average treatment effect as a result of moving from $x$ to $x'$.
+
+From the \textit{all causes} framework, the object of interest:
+
+\begin{equation}
+	\left\{ \frac{\partial}{\partial x} \phi(X, u) \right\}_{u \in supp \, U}
+\end{equation}
+
+
+The average that's considered to be a more feasible target:
+
+\begin{equation}
+	\frac{\partial}{\partial x} \mathbb{E} \left[ \phi(X, U) | X = x \right]
+\end{equation}
+
+Weight derivatives at different values of the domain with the density of those values:
+
+\begin{equation}
+	\mathbb{E} \left[ \frac{\partial}{\partial x} \mathbb{E} \left[ \phi(X, U) | X = x \right] \right]
+\end{equation}
+
+\subsubsection*{A note about the difference between using $\phi(X, U)$ and $\phi(x, U)$ (notational issue? maybe a lil more than that)}
+
+$\phi(X, U)$ and $\phi(x, U)$ are two different random variables, right?
+
+
+What is the bias like for $\beta_{BLP}$ in this setting?
+Can we obtain the parameter that $\beta_{BLP}$ estimates as a result of some penalisation? So it would be a penalisation that leads to the bin being the complete domain, right?
+
+\noindent\rule{\textwidth}{0.5pt}
+
+
+Is $\beta_{BLP}$ the efficient estimator of the Yitzhaki-weighted average derivative?
+
+Is there a difference between 
+
+How much can we gain in terms of variance by imposing the bias of the sort that $\beta_{BLP}$ does?
+
+When we do lasso: we chose a particular `space' with respect to which to penalise the model, right? What can we choose as a `space' in this case of estimating derivatives?
+
+This penalisation must make it optimal to have the longest bin width.
+
+It seems weird to impose a minimum distance between the set of weights and the pdf of $X$, right? Maybe penalise directly penalise the distance between the set of Yitzhaki weights and the true pdf of $X$?
+
+Set of weights $\omega: supp X \rightarrow \mathbf{R}_+$.
+
+\begin{align}
+	d(\omega, \omega_z) \leq \lambda \\
+	s.t. \min d(\omega, f_X)
+\end{align}
+
+\textit{Sudden realisation about lasso:} If $p$ is infinite, does it mean we can recover $y$ perfectly?
+
+
+Consider a scenario: We obtained an estimate of $\beta_{BLP}$, which we know what estimates in terms of weights for the average derivative. Then we can obtain another estimate of the average derivative with another set of weights. Can we then use this joint info to do better inference on the whole set of values of derivatives?
+
+
+What can we learn about such a complex multidimensional object? Is it worth it to try to match all of it well? Maybe penalise some parts of it?
+
+Bonhomme's suggestion to do Bayesian -- that would be very similar to Chernozhukov stuff, right? With Dirichlet processes and such?
+
+
+What I'm pursuing: what if we treat linear estimation when targeting derivatives not as a `biased' approximation of real average but some weird function of those derivatives - so we kinda `escape' the bias part ?.. does this angle make it any better/more useful ?
+
+So, where this might make a difference: when we shrink towards the linear model, we just `handwaive' the bias, right? we just say that: yes, we allow for bias in favour of lower variance. but what if instead of looking for such `heuristic' ways to reduce bias, we take the approach of looking for functions/functionals of parameters that are `easier' to estimate? i think what got me hooked up with yitzhaki weights is that we basically chose another parameter of interest and obtained an estimator that has a much lower variance. so, then, it's not unbiasedness that we sacrifice -- it's kinda `loss of info', which is requires a different metric to judge the severity of loss? i mean, admittedly bias can probably still be used; but it might be cool to reframe the econometric problem in terms of information/variance trade-off, no? It seems more intuitive in case of dimensionality reduction -- entropy seems a natural measure here, no? but with yitzhaki weights, not so clear; it's not that we reduce dimensionality, right? but in the uniform case, we kinda do, maybe? btw, both average derivative and yitzhaki weights are functionals of the actual object we're interested (the whole set of derivatives).
+
+Is entropy a norm?
+
+make a decision on the information loss -> obtain the function form that you need to estimate (e.g., yitzhaki weights -> linear) -> then tackle bias/variance trade-off
+
+for how `many' dbns yitzhaki weights are an okay/horrible loss?
+
+the average is the minimiser of the prediction error, right?
+what if i specify that i want to predict only on certain subsets?
+the bias of yitzhaki weights depends on the dbn, right?
+this is true for any model selection type of approach, no?
+
+
+\textit{Another phrasing of what i want to do:} How to rationalise the choice of Yitzhaki weights as something you want to estimate ? Basically, in the same spirit as robust contracts.
+
+isaieh informativeness of parameter -- 
+
+
+\textit{Just to reiterate what I should probably do in the first place:} Find some evidence (simulation or theory) that choosing weird yitzhaki weights (which lead to a biased estimate of the average derivative) can be beneficial on net given very low variance of the estimator. Maybe discover that there is middle ground between targeting average derivative and yitzhaki weights. Also another aspect: analyse shrinkage vs kernel bandwidth -- both can suggest linear model but in principally different ways, right?
+
+\textit{Another big thing to keep in mind as the end goal:} what was it ?.....
+
+
+Think about the papers to use as a basis for simulations? Maybe Dell \& Olken Java paper?
+
+
+\section*{directly relevant papers}
+
+\subsection*{Semenova \& Chernozhukov (2021)}
+
+The starting point as i see it: We have identification of what we actually want, but the chosen estimator is biased (estimator of the nuisance parameter); this can happen bc of regularisation. And I think this is where the ols thing can fit -- ols is extreme regularisation, right?
+
+\textit{Seems natural to check:} Does this orthogonalisation approach to correcting bias in the estimation of $\eta$ lead to lower variance compared to kernel estimation? I think this is actually very interesting: does this way of correcting bias allow not to increase the variance to as high as kernelling does?
+
+Also: the issue of the choice of $\eta$ (e.g., how much regularisation to do) is not discussed in the paper, right? Well, there must be tuning going on, given the estimator chosen, right? (like if lasso, then the choice of $\lambda$ is incorporated). But again, that's with respect to the error in predicting function values, not derivatives! Would we get anything different (in terms of how to do tuning) if we focus on targeting derivatives rather than levels?
+
+The benefit of deriving yitzhaki weights is that we can analytically show bias as a function of the true model/dgp.
+
+Think about this type of cases: the shape of the cef is regular enough for the re-weighting not to have dramatic consequences, but the dgp is such that kernel ols is extremely noisy.
+
+Think about the difference between asymptotic variance and the finite sample one -- even if asymptotically two estimators are equivalent, we can probably argue that one does much better/worse for finite samples, no?
+
+
+\noindent\rule{\textwidth}{0.5pt}
+
+\textit{A tangential idea (which goes into the territory of selection on observables):} With continuous treatment, does it make sense to do regularisation on the set of controls but kernelling with respect to the treatment variable of interest?
+
+
+\section*{structure of the project}
+
+\textbf{`parameters' that should govern the choice of the estimator for the average derivative:}
+
+\begin{itemize}
+  \item cef's shape
+  \item joint dbn of $(X, U)$
+\end{itemize}
+
+
+\textbf{things to check / look into:}
+
+\begin{itemize}
+  \item how does the choice of $\lambda$ in lasso relate to where we end up in the bias/variance trade-off?
+  \item when doing asymptotics, can we decompose the deviation from the limiting normal dbn into components i specified above (cef's shape and joint dbn of $(X, U)$)?
+  \item how to do cross-validation when you want to target the average derivative?
+  \item show that shrinkage can do better than local ols in finite samples
+  \item specify the trade-off between informativeness of the target parameter and the estimator's mse
+	\begin{itemize}
+	  \item need to think carefully about how to define `informativeness'. the starting point: the joint dbn of potential outcomes. one idea: there's obviously some dimensionality reduction going on
+	\end{itemize}
+\end{itemize}
+
+\textit{idea about how to do cross-validation when targeting the average derivative:} do some sort of a hausmann test? pick an unbiased estimator and see if the biased/low-variance one is too `far' or not. The cross-validation part comes in because need to choose how much to `shrink' towards the linear regression. Def need to figure out how the hausmann test works.
+
+\section*{convo with stéphane}
+
+gaussian approach -- kolesa minimax -- minimising sensitivity to misspecification (with veiner)
+
+holder / soboleff
+
+willimas rasmussen -- gaussian processes
+max cassy -- optimal taxation, 
+
+lasso/ridge on basis function approximation
+
+bruce hansen -- shrinkage -- restricted / unrestricted -- testing.
+impossibility of deriving weights
+
+the variance of prior shrinks as the sample size increases
+
+\textbf{main potential contributions i could make:}
+
+\begin{itemize}
+  \item suggest an alternative to cross-validation that is more suitable for targeting the average derivative
+  \item make a bridge to yitzhaki weights -- how can we exploit the fact that ols targets yitzhaki-weighted average derivative?
+	\begin{itemize}
+	  \item this is probably related to my question about why we might choose some parameters rather than others
+	\end{itemize}
+ 
+\end{itemize}
+
+
+
+\subsection*{afterthoughts}
+
+gaussian prior -- what estimator does it lead to?
+
+oracle estimation: you know the variance of the gaussian prior -- that defines the amount of shrinkage -- you do the estimation with that shrinkage -- see if it does well or not
+
+average derivative is a functional of the whole derivative function, right?
+
+ideal mapping to get / derive: degree of shrinkage -> distance from actually needed weights
+
+the distance between yitzhaki weights and the density of $X$ -- it's not that difficult to get a sense of from the sample, no? if cef is linear, then weights don't matter really, right? but that's about `missing out' an oppo to reduce variance in some cases, no? we still can gain in cases when the shape is far from linear ?
+
+show a plot where on the x-axis -- the distance between yitzhaki weghts and density; on the y-axis -- performance of estimators (e.g., ols vs kernel; different levels of shrinkage); an interesting scenario: the `optimal' level of shrinkage goes up as the distance decreases.
+
+I think an analogy would be: when doing kernel, the rule for picking the bin size should probably conform with the same type of plot -- for different sample sizes, different bin sizes are optimal (before that, you plot performance for different bins, for each sample size).
+
+the monte-carlo kick: for different sample realisation, you'll get different distances -- so, the question is whether across all samples the corresponding choice will `on average' be fine.
+
+how to calculate the distance between two arbitrary densities in r ?
+
+how does the rkhs approach correspond to the kernel linear/polynomial regression? see section 6.7 in esl. How much smoothing (what $\lambda$) leads to the linear model?
+
+
+\section*{things i should present}
+
+Two plots that illustrate that my choice of the optimal level of shrinkage is different from the one that is currently used when minimising mean squared error of prediction
+
+\section*{questions to raise}
+
+I'm changing the marginal dbn of $X$ (as a parameter that should determine optimal shrinkage) -- that changes the average derivative -- is this important?
+
+
+\section*{steps to make}
+
+\begin{itemize}
+  \item pick the model for monte carlo -- this includes specifying the cef -- so that you can analytically calculate the average derivative
+  \item choose an estimator for the average derivative given the estimate of the function itself -- e.g., if using linear regression, then the coef would be the estimate of the average derivative, right?
+  \item for each fixed dbn of $X$, simulate $N$ samples and compare the average estimate of the average derivative to the true average derivative (calculable because we specify the full model in monte carlo)
+\end{itemize}
+
+
+\section*{points i want to make}
+
+Distance between the true average and the yitzhaki weighted average -- it depends on a) the shape of cef; b) the marginal dbn of $X$. Maybe: the `loss' from deviating to yitzhaki weighted average is less than the loss in bias in terms of estimating the cef itself.
+
+\end{document}

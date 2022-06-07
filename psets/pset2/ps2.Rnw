@@ -1,0 +1,155 @@
+\documentclass[a4paper,12pt,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage[margin = 1in,includeheadfoot]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+
+\parindent=0pt
+\parskip=10pt
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Sasha Petrov}
+\lhead{}
+\rfoot{\thepage}
+\setlength{\headheight}{14.5pt}
+
+%hyperlinks package -- should be the last to import
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue }
+	
+\title{ECON 31703: Assignment 2}
+\author{Sasha Petrov}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section*{Exercise 1}
+
+<<echo = FALSE>>=
+
+load('output.RData')
+
+@
+
+
+\subsection*{(d), (e)}
+
+<<>>=
+
+zero <- sapply(blasso, function(x) {TRUE %in% (x[[1]] != 0)})
+
+print(paste('how many times do we get non-zero coefs?', sum(zero)))
+
+@
+
+
+Not sure what is the point in applying lasso with $\lambda = 20$ to a DGP with unit variance. Looks like the approximate maximum value $\sum_{i = 1}^N y_i^k x_{ik}$ can take is around $N$, which makes it very unlikely for the coefficient estimate to exceed $20$. At least in the simulations, I didn't get any non-zero coefs.
+
+\textit{How to read the table:} Rows -- two coefficient estimates ($\hat \beta_1$ and $\hat \beta_2$); 1st column -- OLS, 2nd column -- lasso with $\lambda = 20$,
+3rd column -- ridge with $\lambda = 20$.
+
+<<>>=
+
+print(comp)
+
+@
+
+The pattern of coefficients conforms with what we expect OLS, lasso, and ridge to do.
+Thanks to the independence between most regressors, OLS does a good job of estimating the true values. Rdige only does shrinking, so we just see the reduction of coefs towards $0$. Lastly, lasso does both shrinking and thresholding; and because we chose such a high $\lambda$, we end up doing only thresholding.
+
+
+\subsection*{f}
+
+Given the chosen algorithm to find the lasso estimate (coordinate-wise decent), the sufficient condition for all coefficient estimates to be $0$ is (it's definitely sufficient, not sure about necessity; if this condition is not met, then at least in the first step there'll be a `meaningful' updating; does it mean that it's not possible that this updated coefficient will be pushed back to $0$? I don't know):
+
+\begin{equation}
+	\left|\frac{1}{N} \sum_{i = 1}^N y_i^k x_{ik} \right| < \lambda, \, \forall k = 1, \dots, p \quad \textrm{and} \quad y_i^k = y_i - \sum_{j \neq k} x_{ij}  \hat\beta_j^0
+\end{equation}
+
+<<fig = TRUE>>=
+
+plot(0, 0, xlim = c(0, 1), ylim = c(-1, 1), type = 'n',
+     xlab = expression(lambda), ylab = expression(hat(beta)))
+cl <- rainbow(5)
+for (i in 1:5) {
+  lines(grid, coefs_1f[i, ], col = cl[i])
+}
+legend("topright", legend = 1:5, col=cl, pch=1)
+
+
+@
+
+The figure clearly shows how lasso behaves: as penalisation becomes stricter, lasso shrinks more and more (might be even to $0$).
+
+
+\textit{The whole standardisation issue:} To be honest, still don't quite understand a) why it's especially important with lasso compared to ols (for which the scale also obviously matters); b) how should one compare results for ols and lasso -- standardise for both or rescale lasso coefs `back'? In the given case it doesn't seem to matter; that is, lasso (with standardised data) gives estimates of the magnitude comparable to ols run on non-standardised data. Is this purely because the data is generated from the standard normal CDF?
+
+
+\section*{Exercise 2}
+
+$\rho = 0.9$ means that once $X_0$ gets realised, all other $\{X_t\}_{t = 1}^{200}$ will be `approximately' the same; which implies that it's hard to estimate $\beta$ (I expect variance of the estimate to be high, as the variance of draws from $X_t$ is very low).
+
+\textit{Another observations about forecasting:} At the same time, this is also the only reason forecasting possible, right? We're not really interested in estimating $Y_t$ as a function of $X_t$, because once $X_t$ is realised, so is $Y_t$. So, the `path dependence' of $X_t$ is what gives us hope that we can predict $Y_{t + h}$ with $X_t$. In other words, the crux of the issue here is not that we don't know what effect of some treatment is (we don't care about changing $X_t$); we actually care only about the level of the `regression function' but we don't know what the actual `treatment' is.
+
+All this makes me wonder: why do we pose the problem in such a `reduced-form' way? That is, finding the predictor of $Y_{t + h}$ given $X_t$. Can we gain anything by a) estimating $Y_t$ as a function of $X_t$ (which has a better `feel' in terms of reflecting the actual reality); b) then predicting $X_{t + h}$ with $X_t$? Is there a result that predicting directly $Y_{t + h}$ from $X_t$ has no `deficiencies' compared to what I just proposed?
+
+\subsection*{(b)}
+
+<<fig = TRUE>>=
+
+plot(lambdas, av_mspe, ylim = c(7.8, 12),
+     xlab = expression(lambda), ylab = expression(bar(MSPE)))
+
+@
+
+I think I got a typical cross-validation plot: a U-shaped average MSPE graph; no penalisation (low $\lambda$) makes multicollinearity concerns dominate; too much penalisation (high $\lambda$) leads to a very high bias. But there is a sweet spot.
+
+
+<<>>=
+
+table_2b
+
+@
+
+The estimate of $\beta_1$ using the `best' $\lambda$ ($\approx 3.4$) is considerably away from the true model (although not clear if that's a valid comparison -- $\beta_1 = 5$ is for the contemporaneous model, right?). If you want to think about it this way, then probably could make an observation that although the coefficient is very much away from truth, the prediction of the output is pretty good.
+
+
+\subsection*{(c)}
+
+<<fig = TRUE>>=
+
+plot(lambdas, av_mspe_c, ylim = c(7.8, 11),
+     xlab = expression(lambda), ylab = expression(bar(MSPE)))
+
+@
+
+<<>>=
+
+table_2c
+
+@
+
+
+Some observations when there's correlation between regressors:
+
+\begin{itemize}
+  \item Computation time increased significantly. I guess, coordinate-wise decent has to make more `loops' chasing spurious correlations.
+  \item There are more non-zero coefficients in the end result. Probably for the same reason as above.
+  \item The cross-validated optimal $\lambda$ is lower in the correlation case. Maybe because with higher penalisastion we risk penalising the actually important coefficients because of the `spurious' correlation among regressors?
+\end{itemize}
+
+\end{document}

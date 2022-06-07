@@ -1,0 +1,49 @@
+\documentclass[a4paper,12pt,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage[margin = 1in,includeheadfoot]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+
+\parindent=0pt
+\parskip=10pt
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Alexander Petrov}
+\lhead{}
+\rfoot{\thepage}
+
+%hyperlinks package -- should be the last to import
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue }
+
+\begin{document}
+
+Parameter of interest:
+
+\begin{equation}
+	(Y(1), Y(0), D) \sim F
+\end{equation}
+
+Observed vector:
+
+\begin{equation}
+	(D Y(1) + (1 - D) Y(0), D) \sim G
+\end{equation}
+
+Consider the case when $P(D = 1) = 0$. Does it necessarily imply that $F$ cannot be identified? I think so now\dots
+
+But my question was inspired by the following consideration: Take the subset of the sample space $S = \{ \omega \in \Omega : D(\omega) = 0\}$. We started with the assumption that $P(S) = 0$. I was thinking that maybe one can still map $S$ into all possible values of $Y(0)$ in a way that would still make identification possible. However, the thing is that any subset of a measure $0$ set has to have measure $0$ also, damn... Therefore, whatever way we map elements of $S$ into the range of $Y(0)$, $P(Y(0) < y | D = 0) = 0$, so the conditional distribution... wait WHAT THE FUCK, how do conditional distributions work if the probability of any variable taking a certain value is $0$??? geezus... brb
+
+\end{document}
