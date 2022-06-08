@@ -1,6 +1,8 @@
-### sasha petrov - - pset 2 for bonhomme's topics in ecm (spring 2022)
+### sasha petrov - - pset 2 for bonhomme's topics in ecm (spring 2022) =========
 
 library(MASS)
+
+### exercise 1 =================================================================
 
 lasso.objective <- function(b, data, lambda) {
   .5 * (1 / nrow(data)) * sum((data[, 1] - data[, -1] %*% b) ^ 2) +
@@ -63,7 +65,8 @@ sample_sn <- function(p, n, N) {
 
 sample_d <- function(srn, sigma_chol) {
   s <- apply(srn, 3, function(x) {x %*% sigma_chol}, simplify = FALSE)
-  lapply(s, function(x) {cbind(x[, 1] - x[, 2] + x[, dim(srn)[2]], x[, 1:(dim(srn)[2] - 1)])})
+  lapply(s, function(x) 
+    {cbind(x[, 1] - x[, 2] + x[, dim(srn)[2]], x[, 1:(dim(srn)[2] - 1)])})
 }
 
 p <- 90
@@ -136,7 +139,7 @@ legend("topright", legend = 1:5, col=cl, pch=1)
 
 
 
-### exercise 2
+### exercise 2 =================================================================
 
 
 # keep in mind that the size of the dataset is T + 1 !!!
@@ -157,7 +160,8 @@ mspe <- function(data, lambda, tau = c(100, 10), h = 1) {
     start1 <- 1 + i * tau[2]
     start2 <- tau[1] + 1 + i * tau[2]
     
-    xt <- X[start1:(start1 + tau[1] - 1), ] # should never face the problem of the right bound exceeding T + 1, right?
+    xt <- X[start1:(start1 + tau[1] - 1), ] # should never face the problem of
+    # the right bound exceeding T + 1, right?
     ytph <- Y[(start1 + h):(start1 + h + tau[1] - 1)]
     d <- cbind(ytph, xt)
     bl <- lasso(d, lambda, b_initial = rep(0, dim(xt)[2]))[[1]]
