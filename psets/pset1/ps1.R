@@ -1,5 +1,3 @@
-install.packages('mvtnorm')
-library('mvtnorm')
 library('MASS')
 
 # give a sample given the number of regressors and the size
@@ -14,7 +12,8 @@ sample_sn <- function(p, n, N) {
 # transform so that there's dependence
 sample <- function(srn, sigma_chol) {
   s <- apply(srn, 3, function(x) {x %*% sigma_chol}, simplify = FALSE)
-  lapply(s, function(x) {cbind(x[, 1] - x[, 2] + x[, dim(srn)[2]], x[, 1:(dim(srn)[2] - 1)])})
+  lapply(s, function(x) 
+    {cbind(x[, 1] - x[, 2] + x[, dim(srn)[2]], x[, 1:(dim(srn)[2] - 1)])})
 }
 
 sample_r <- function(full_sample, sigma, p) {
@@ -53,7 +52,8 @@ print(table_b)
 # c -- being jittery about how many regressors to use
 
 p_tries <- c(5, 10, 50, 85, 90)
-tries <- length(p_tries) # number of 'guesses' for how many regressors to include
+tries <- length(p_tries) # number of 'guesses' for 
+                        # how many regressors to include
 table_c <- matrix(0, 2, tries)
 
 for (i in 1:tries) {
@@ -72,11 +72,14 @@ tries_d <- length(p_tries_d)
 table_d <- matrix(0, 2, tries_d)
 
 min_eig_pred_er <- function(ptilde, samples) {
-  eig <- sapply(samples, function(x){min(eigen(1 / dim(x)[1] * t(x[, 3:(ptilde+1)]) %*% x[, 3:(ptilde+1)])$values )})
+  eig <- sapply(samples, function(x)
+    {min(eigen(1 / dim(x)[1] * t(x[, 3:(ptilde+1)]) %*% 
+                 x[, 3:(ptilde+1)])$values )})
   #proj <- lapply(samples, function(x){lm(x[, 2] ~ x[, 3:(ptilde+1)] -1)})
   #sq_pred <- sapply(proj, function(x) mean(x$fitted.values^2))
   
-  proj <- lapply(samples, function(x){x[, 3:(ptilde+1)] %*% ols(x[, -1], ptilde - 1)})
+  proj <- lapply(samples, function(x)
+    {x[, 3:(ptilde+1)] %*% ols(x[, -1], ptilde - 1)})
   sq_pred <- sapply(proj, function(x) mean(x^2))
   
   c(mean(eig), mean(sq_pred))
@@ -116,11 +119,13 @@ sigma_e <- lapply(as.list(rho_e), sig, p = p_e) # store covariance matrices
 sigma_chol_e <- lapply(sigma_e, chol)
 
 
-# a function that returns mean and variance of beta_1 and the mean lowest eigenvalue
+# a function that returns mean and variance of beta_1 and 
+# the mean lowest eigenvalue
 e_func <- function(sample, p) {
   beta_bols <- sapply(sample, function(x){ols(x, p)[1]})
   
-  eig <- sapply(sample, function(x){min(eigen(1 / dim(x)[1] * t(x[, 2:(p+1)]) %*% x[, 2:(p+1)])$values )})
+  eig <- sapply(sample, function(x)
+    {min(eigen(1 / dim(x)[1] * t(x[, 2:(p+1)]) %*% x[, 2:(p+1)])$values )})
   
   c(mean(beta_bols), var(beta_bols), mean(eig))
 }
@@ -139,7 +144,9 @@ for (j in 1:length(rho_e)) {
     
     # 1 step ahead -- to avoid remaking samples again for the next question
     if (N_tries[i] == 1000) {
-      all_eig <- lapply(mc_e[[i]], function(x) {sort(eigen(1 / dim(x)[1] * t(x[, 2:(p_e+1)]) %*% x[, 2:(p_e+1)])$values)})
+      all_eig <- lapply(mc_e[[i]], function(x) 
+        {sort(eigen(1 / dim(x)[1] * t(x[, 2:(p_e+1)]) %*% 
+                      x[, 2:(p_e+1)])$values)})
       almost_all_eig <- lapply(all_eig, function(x) {x[-p_e]})
       biggest_eig <- lapply(all_eig, function(x) {x[p_e]})
       eig_rho[[j]] <- colMeans(do.call(rbind, almost_all_eig))
@@ -163,7 +170,8 @@ print(table_e)
 eig_rho <- vector('list', length = length(rho_e))
 eig_big_rho <- vector('list', length = length(rho_e))
 for (i in 1:length(rho_e)) {
-  all_eig <- lapply(mc_e[[i]], function(x) {sort(eigen(1 / dim(x)[1] * t(x[, 2:(p+1)]) %*% x[, 2:(p+1)])$values)})
+  all_eig <- lapply(mc_e[[i]], function(x) 
+    {sort(eigen(1 / dim(x)[1] * t(x[, 2:(p+1)]) %*% x[, 2:(p+1)])$values)})
   almost_all_eig <- lapply(all_eig, function(x) {x[-p]})
   biggest_eig <- lapply(all_eig, function(x) {x[p]})
   eig_rho[[i]] <- colMeans(do.call(rbind, almost_all_eig))
@@ -184,9 +192,10 @@ print(eig_big_rho)
 
 p_g <- 900 # should be enough lol
 
-sigma_g <- lapply(as.list(rho_e), sig, p = p) # store covariance matrices not to make them anew each time they're called
+sigma_g <- lapply(as.list(rho_e), sig, p = p) # store covariance matrices 
+                                # not to make them anew each time they're called
 
-srn <- sample_rn(max(N_tries), p_g, N_samples) # this will blow up your memory!!!
+srn <- sample_rn(max(N_tries), p_g, N_samples) # this will blow up your memory!!
 
 
 table_g <- array(0, dim = c(6, tries_e, 3))
@@ -205,9 +214,13 @@ for (j in 1:length(rho_e)) {
       ss <- 0.9 * N_tries[i]
       slog <- round(20 * log(N_tries[i]))
       coefs_eig[[j]][[i]][1, s] <- ols(sample[1:N_tries[i], ], ss)[1]
-      coefs_eig[[j]][[i]][2, s] <- min(eigen(1 / N_tries[i] * t(sample[1:N_tries[i], 2:(ss+1)]) %*% sample[1:N_tries[i], 2:(ss+1)])$values )
+      coefs_eig[[j]][[i]][2, s] <- min(eigen(1 / N_tries[i] * 
+                                        t(sample[1:N_tries[i], 2:(ss+1)]) %*% 
+                                        sample[1:N_tries[i], 2:(ss+1)])$values )
       coefs_eig[[j]][[i]][3, s] <- ols(sample[1:N_tries[i], ], slog)[1]
-      coefs_eig[[j]][[i]][4, s] <- min(eigen(1 / N_tries[i] * t(sample[1:N_tries[i], 2:(slog+1)]) %*% sample[1:N_tries[i], 2:(slog+1)])$values )
+      coefs_eig[[j]][[i]][4, s] <- min(eigen(1 / N_tries[i] * 
+                                        t(sample[1:N_tries[i], 2:(slog+1)]) %*% 
+                                      sample[1:N_tries[i], 2:(slog+1)])$values )
     }
     
   }
@@ -229,27 +242,5 @@ for (j in 1:length(rho_e)) {
 
 # save all of the tables for reporting
 
-save(table_b, table_c, table_d, table_e, eig_rho, eig_big_rho, table_g, file = 'output.RData')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+save(table_b, table_c, table_d, table_e, eig_rho, eig_big_rho, table_g, 
+     file = 'output.RData')
